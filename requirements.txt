@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+gunicorn
+aiogram==3.20.0.post0
+httpx
+python-dotenv
+sqlalchemy>=2.0
+aiomysql
+redis
+Pillow
+yookassa
+arq==0.25.0
+pydantic>=2.7
+pydantic-settings>=2.2
+openai==2.2.0

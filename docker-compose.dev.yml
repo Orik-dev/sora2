@@ -1,0 +1,56 @@
+services:
+  web:
+    build: .
+    container_name: Sora
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - internal
+      - external_net
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  redis:
+    image: redis:7-alpine
+    container_name: veo-redis
+    command: [ "redis-server" ]
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - internal
+
+  arq_worker:
+    build: .
+    command: arq app.workers.arq_worker.WorkerSettings
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - internal
+      - external_net
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+volumes:
+  redis_data:
+
+
+networks:
+  internal:
+    driver: bridge
+  external_net:
+    driver: bridge

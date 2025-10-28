@@ -1,0 +1,45 @@
+version: "3.9"
+
+networks:
+  app-net:
+    external: true
+
+services:
+  web:
+    build:
+      context: .
+    image: sora2-web:latest
+    container_name: sora2-web
+    restart: unless-stopped
+    env_file: [ .env ]
+    expose: [ "8000" ]
+    depends_on: [ redis ]
+    networks: [ app-net ]
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/healthz || curl -fsS http://localhost:8000/ || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  arq_worker:
+    image: sora2-web:latest
+    container_name: sora2-worker
+    restart: unless-stopped
+    env_file: [ .env ]
+    # ВАЖНО: путь к твоему файлу и классу настроек
+    command: [ "arq", "app.workers.arq_worker.WorkerSettings" ]
+    depends_on: [ web, redis ]
+    networks: [ app-net ]
+
+  redis:
+    image: redis:7-alpine
+    container_name: sora2-redis
+    command: [ "redis-server", "--maxmemory-policy", "allkeys-lru" ]
+    restart: unless-stopped
+    networks: [ app-net ]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
