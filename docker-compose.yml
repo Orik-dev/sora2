@@ -27,7 +27,6 @@ services:
     container_name: sora2-worker
     restart: unless-stopped
     env_file: [ .env ]
-    # ВАЖНО: путь к твоему файлу и классу настроек
     command: [ "arq", "app.workers.arq_worker.WorkerSettings" ]
     depends_on: [ web, redis ]
     networks: [ app-net ]

@@ -68,4 +68,9 @@ class BroadcastJob(Base):
     total = Column(Integer, default=0)
     sent = Column(Integer, default=0)
     failed = Column(Integer, default=0)
-    note = Column(Text)
+    fallback = Column(Integer, default=0)  # ✅ НОВОЕ: fallback на текст
+    note = Column(Text, nullable=True)
+    media_type = Column(String(20), nullable=True)  # ✅ НОВОЕ: photo/video
+    media_file_id = Column(Text, nullable=True)      # ✅ НОВОЕ: file_id
+    media_file_path = Column(Text, nullable=True)    # ✅ НОВОЕ: не используется, но оставлено для совместимости
+
